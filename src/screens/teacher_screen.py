@@ -3,7 +3,6 @@ import streamlit as st
 from src.ui.base_layout import style_background_dashboard, style_base_layout
 
 from src.components.header import header_dashboard
-from src.components.footer import footer_dashboard
 from src.components.subject_card import subject_card
 
 from src.database.db import (
@@ -174,7 +173,6 @@ def teacher_dashboard():
     if st.session_state.current_teacher_tab == "attendance_records":
         teacher_tab_attendance_records()
 
-    footer_dashboard()
 
 
 # =========================================================
@@ -671,7 +669,6 @@ def teacher_screen_login():
 
             st.session_state.teacher_login_type = 'register'
 
-    footer_dashboard()
 
 
 # =========================================================
@@ -816,4 +813,3 @@ def teacher_screen_register():
 
             st.session_state.teacher_login_type = 'login'
 
-    footer_dashboard()
