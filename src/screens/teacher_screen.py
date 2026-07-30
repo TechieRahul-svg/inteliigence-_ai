@@ -10,7 +10,8 @@ from src.database.db import (
     create_teacher,
     teacher_login,
     get_teacher_subjects,
-    get_attendance_for_teacher
+    get_attendance_for_teacher,
+    get_enrolled_students
 )
 
 from src.components.dialog_create_subject import create_subject_dialog
@@ -23,8 +24,6 @@ from src.components.dialog_attendance_results import attendance_result_dialog
 import numpy as np
 from datetime import datetime
 import pandas as pd
-
-from src.database.config import supabase
 
 from src.components.dialog_voice_attendance import voice_attendance_dialog
 
@@ -315,14 +314,7 @@ def teacher_tab_take_attendance():
                                 []
                             ).append(f"Photo {idx + 1}")
 
-                enrolled_res = (
-                    supabase.table('subject_students')
-                    .select("*, students(*)")
-                    .eq('subject_id', selected_subject_id)
-                    .execute()
-                )
-
-                enrolled_students = enrolled_res.data
+                enrolled_students = get_enrolled_students(selected_subject_id)
 
                 if not enrolled_students:
 

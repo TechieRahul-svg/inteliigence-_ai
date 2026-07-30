@@ -14,15 +14,21 @@ def main():
     if 'login_type' not in st.session_state:
         st.session_state['login_type'] = None
 
-    match st.session_state['login_type']:
-        case 'teacher':
-            teacher_screen()
+    import httpx
+    try:
+        match st.session_state['login_type']:
+            case 'teacher':
+                teacher_screen()
 
-        case 'student':
-            student_screen()
-        
-        case None:
-            home_screen()
+            case 'student':
+                student_screen()
+            
+            case None:
+                home_screen()
+    except httpx.RequestError as e:
+        st.error("🔌 **Database Connection Error**: Unable to connect to the database. Please check your internet connection and try again.")
+        if st.button("🔄 Retry Connection"):
+            st.rerun()
 
 
     join_code = st.query_params.get('join-code')
