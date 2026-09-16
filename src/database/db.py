@@ -1,12 +1,19 @@
-import sqlite3
+import psycopg2
 import bcrypt
 import json
 import os
 
-DB_PATH = "attendance_system.db"
+DB_CONFIG = {
+    "host": "localhost",
+    "database": "attendance_system",
+    "user": "postgres",
+    "password": "12345",
+    "port": "5432"
+}
+
 
 def get_connection():
-    return sqlite3.connect(DB_PATH)
+    return psycopg2.connect(**DB_CONFIG)
 
 def setup_database():
     conn = get_connection()
@@ -15,7 +22,7 @@ def setup_database():
     # Create teachers table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS teachers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             username TEXT UNIQUE,
             password TEXT,
             name TEXT
@@ -25,7 +32,7 @@ def setup_database():
     # Create students table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS students (
-            student_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id SERIAL PRIMARY KEY,
             name TEXT,
             face_embedding TEXT,
             voice_embedding TEXT
@@ -35,7 +42,7 @@ def setup_database():
     # Create subjects table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS subjects (
-            subject_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            subject_id SERIAL PRIMARY KEY,
             subject_code TEXT UNIQUE,
             name TEXT,
             section TEXT,
@@ -58,7 +65,7 @@ def setup_database():
     # Create attendance_logs
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS attendance_logs (
-            log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            log_id SERIAL PRIMARY KEY,
             student_id INTEGER,
             subject_id INTEGER,
             timestamp TEXT,
@@ -84,7 +91,7 @@ def check_pass(pwd, hashed):
 def check_teacher_exists(username):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT username FROM teachers WHERE username = ?", (username,))
+    cursor.execute("SELECT username FROM teachers WHERE username = %s", (username,))
     row = cursor.fetchone()
     conn.close()
     return row is not None
@@ -152,7 +159,7 @@ def create_subject(subject_code, name, section, teacher_id):
         cursor.execute("INSERT INTO subjects (subject_code, name, section, teacher_id) VALUES (?, ?, ?, ?)",
                        (subject_code, name, section, teacher_id))
         conn.commit()
-    except sqlite3.IntegrityError:
+    except psycopg2.IntegrityError:
         pass # Handle unique constraint for subject code
     conn.close()
     return True
