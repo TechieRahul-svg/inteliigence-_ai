@@ -142,7 +142,7 @@ def create_student(new_name, face_embedding=None, voice_embedding=None):
     conn.commit()
     student_id = cursor.lastrowid
     conn.close()
-    return [{'student_id': student_id}]
+    return [{'student_id': student_id, 'name': new_name}]
 
 
 def create_subject(subject_code, name, section, teacher_id):

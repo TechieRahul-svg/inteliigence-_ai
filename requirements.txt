@@ -15,7 +15,9 @@ colorama==0.4.6
 cryptography==48.0.0
 decorator==5.2.1
 deprecation==2.1.0
-dlib-bin==20.0.1
+cmake
+dlib>=19.24.0; sys_platform == 'linux'
+dlib-bin>=20.0.1; sys_platform == 'win32'
 face_recognition_models @ git+https://github.com/ageitgey/face_recognition_models@e67de717267507d1e9246de95692eb8be736ab61
 filelock==3.29.0
 fsspec==2026.4.0
