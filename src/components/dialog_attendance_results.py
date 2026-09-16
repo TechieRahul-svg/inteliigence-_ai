@@ -7,6 +7,11 @@ from src.database.db import create_attendance
 
 def show_attendance_result(df, logs):
     st.write('Please review attendance before confirming.')
+    if hasattr(df, 'copy') and not df.empty:
+        df = df.copy()
+        for col in df.columns:
+            if df[col].dtype == object:
+                df[col] = df[col].astype(str)
     st.dataframe(df, hide_index=True, width='stretch')
 
     col1, col2 = st.columns(2)
