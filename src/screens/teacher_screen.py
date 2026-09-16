@@ -639,9 +639,6 @@ def teacher_screen_login():
                     icon="👋"
                 )
 
-                import time
-                time.sleep(1)
-
                 st.rerun()
 
             else:
@@ -660,6 +657,7 @@ def teacher_screen_login():
         ):
 
             st.session_state.teacher_login_type = 'register'
+            st.rerun()
 
 
 
@@ -782,12 +780,7 @@ def teacher_screen_register():
             if success:
 
                 st.success(message)
-
-                import time
-                time.sleep(2)
-
                 st.session_state.teacher_login_type = "login"
-
                 st.rerun()
 
             else:
@@ -804,4 +797,5 @@ def teacher_screen_register():
         ):
 
             st.session_state.teacher_login_type = 'login'
+            st.rerun()
 
