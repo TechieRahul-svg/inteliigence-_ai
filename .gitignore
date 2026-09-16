@@ -1,10 +1,33 @@
+# Python virtual environments
 venv/
+env/
+ENV/
+.venv/
+
+# Byte-compiled / cache files
 __pycache__/
-*.pyc
-.env
-.streamlit/secrets.toml
+*.py[cod]
+*$py.class
 .ipynb_checkpoints/
+
+# Secrets and environment configurations
+.env
+.env.*
+.streamlit/secrets.toml
+
+# Machine learning models & cache files
 *.pkl
 *.pt
 *.h5
+
+# Local SQLite databases
 *.db
+*.sqlite
+*.sqlite3
+
+# Operating System and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
