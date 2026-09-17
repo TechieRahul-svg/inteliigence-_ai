@@ -1,6 +1,5 @@
 name: AI Attendance System CI
 
-# When should this run?
 on:
   push:
     branches:
@@ -20,35 +19,32 @@ jobs:
 
     steps:
 
-    # Download your code
-    - name: Checkout code
+    - name="Checkout code"
       uses: actions/checkout@v4
 
 
-    # Install Python
-    - name: Setup Python
+    - name="Setup Python"
       uses: actions/setup-python@v5
       with:
         python-version: "3.13"
 
 
-    # Install dependencies
-    - name: Install dependencies
+    - name="Install dependencies"
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
 
-    # Check Python syntax
-    - name: Check Python files
+    - name="Check Python files"
       run: |
         python -m compileall .
 
-    - name: Install testing tools
-  run: |
-    pip install pytest
+
+    - name="Install testing tools"
+      run: |
+        pip install pytest
 
 
-    - name: Run Tests
+    - name="Run Tests"
       run: |
         pytest
