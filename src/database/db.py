@@ -103,8 +103,9 @@ def check_teacher_exists(username):
 def create_teacher(username, password, name):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO teachers (username, password, name) VALUES (?, ?, ?)",
-                   (username, hash_pass(password), name))
+    cursor.execute(
+    "INSERT INTO teachers (username, password, name) VALUES (%s, %s, %s)",
+    (username, hash_pass(password), name))
     conn.commit()
     conn.close()
     return True
@@ -112,7 +113,7 @@ def create_teacher(username, password, name):
 def teacher_login(username, password):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, username, password, name FROM teachers WHERE username = ?", (username,))
+    cursor.execute("SELECT id, username, password, name FROM teachers WHERE username = %s",(username,))
     row = cursor.fetchone()
     conn.close()
     
@@ -147,8 +148,7 @@ def create_student(new_name, face_embedding=None, voice_embedding=None):
     f_emb = json.dumps(face_embedding) if face_embedding else None
     v_emb = json.dumps(voice_embedding) if voice_embedding else None
     
-    cursor.execute("INSERT INTO students (name, face_embedding, voice_embedding) VALUES (?, ?, ?)",
-                   (new_name, f_emb, v_emb))
+    cursor.execute("INSERT INTO students (name, face_embedding, voice_embedding) VALUES (%s, %s, %s)",(new_name, f_emb, v_emb))
     conn.commit()
     student_id = cursor.lastrowid
     conn.close()
@@ -159,7 +159,7 @@ def create_subject(subject_code, name, section, teacher_id):
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("INSERT INTO subjects (subject_code, name, section, teacher_id) VALUES (?, ?, ?, ?)",
+        cursor.execute("INSERT INTO subjects (subject_code, name, section, teacher_id) VALUES (%s, %s, %s, %s)",
                        (subject_code, name, section, teacher_id))
         conn.commit()
     except psycopg2.IntegrityError:
@@ -170,7 +170,7 @@ def create_subject(subject_code, name, section, teacher_id):
 def get_teacher_subjects(teacher_id):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT subject_id, subject_code, name, section, teacher_id FROM subjects WHERE teacher_id = ?", (teacher_id,))
+    cursor.execute("SELECT subject_id, subject_code, name, section, teacher_id FROM subjects WHERE teacher_id = %s", (teacher_id,))
     rows = cursor.fetchall()
     
     subjects = []
@@ -185,11 +185,11 @@ def get_teacher_subjects(teacher_id):
         }
         
         # Count students
-        cursor.execute("SELECT COUNT(*) FROM subject_students WHERE subject_id = ?", (subject_id,))
+        cursor.execute("SELECT COUNT(*) FROM subject_students WHERE subject_id = %s", (subject_id,))
         sub['total_students'] = cursor.fetchone()[0]
         
         # Count unique sessions (classes)
-        cursor.execute("SELECT COUNT(DISTINCT timestamp) FROM attendance_logs WHERE subject_id = ?", (subject_id,))
+        cursor.execute("SELECT COUNT(DISTINCT timestamp) FROM attendance_logs WHERE subject_id = %s", (subject_id,))
         sub['total_classes'] = cursor.fetchone()[0]
         
         subjects.append(sub)
@@ -200,7 +200,7 @@ def enroll_student_to_subject(student_id, subject_id):
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("INSERT INTO subject_students (student_id, subject_id) VALUES (?, ?)", (student_id, subject_id))
+        cursor.execute("INSERT INTO subject_students (student_id, subject_id) VALUES (%s, %s)", (student_id, subject_id))
         conn.commit()
     except sqlite3.IntegrityError:
         pass # Already enrolled
@@ -210,7 +210,7 @@ def enroll_student_to_subject(student_id, subject_id):
 def unenroll_student_to_subject(student_id, subject_id):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM subject_students WHERE student_id = ? AND subject_id = ?", (student_id, subject_id))
+    cursor.execute("DELETE FROM subject_students WHERE student_id = %s AND subject_id = %s", (student_id, subject_id))
     conn.commit()
     conn.close()
     return True
@@ -222,7 +222,7 @@ def get_student_subjects(student_id):
         SELECT s.subject_id, s.subject_code, s.name, s.section, s.teacher_id
         FROM subject_students ss
         JOIN subjects s ON ss.subject_id = s.subject_id
-        WHERE ss.student_id = ?
+        WHERE ss.student_id = %s
     ''', (student_id,))
     rows = cursor.fetchall()
     conn.close()
@@ -248,7 +248,7 @@ def get_student_attendance(student_id):
                s.subject_id, s.subject_code, s.name, s.section, s.teacher_id
         FROM attendance_logs a
         JOIN subjects s ON a.subject_id = s.subject_id
-        WHERE a.student_id = ?
+        WHERE a.student_id = %s
     ''', (student_id,))
     rows = cursor.fetchall()
     conn.close()
@@ -277,7 +277,7 @@ def create_attendance(logs):
     for log in logs:
         cursor.execute('''
             INSERT INTO attendance_logs (student_id, subject_id, timestamp, is_present)
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s)
         ''', (log['student_id'], log['subject_id'], log['timestamp'], 1 if log['is_present'] else 0))
     conn.commit()
     conn.close()
@@ -291,7 +291,7 @@ def get_attendance_for_teacher(teacher_id):
                s.subject_id, s.subject_code, s.name, s.section, s.teacher_id
         FROM attendance_logs a
         JOIN subjects s ON a.subject_id = s.subject_id
-        WHERE s.teacher_id = ?
+        WHERE s.teacher_id = %s
     ''', (teacher_id,))
     rows = cursor.fetchall()
     conn.close()
@@ -319,7 +319,7 @@ def get_attendance_for_teacher(teacher_id):
 def get_subject_by_code(subject_code):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT subject_id, name, subject_code FROM subjects WHERE subject_code = ?", (subject_code,))
+    cursor.execute("SELECT subject_id, name, subject_code FROM subjects WHERE subject_code = %s", (subject_code,))
     row = cursor.fetchone()
     conn.close()
     if row:
@@ -329,7 +329,7 @@ def get_subject_by_code(subject_code):
 def check_enrollment(student_id, subject_id):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM subject_students WHERE student_id = ? AND subject_id = ?", (student_id, subject_id))
+    cursor.execute("SELECT * FROM subject_students WHERE student_id = %s AND subject_id = %s", (student_id, subject_id))
     row = cursor.fetchone()
     conn.close()
     return row is not None
@@ -341,7 +341,7 @@ def get_enrolled_students(subject_id):
         SELECT s.student_id, s.name, s.face_embedding, s.voice_embedding
         FROM subject_students ss
         JOIN students s ON ss.student_id = s.student_id
-        WHERE ss.subject_id = ?
+        WHERE ss.subject_id = %s
     ''', (subject_id,))
     rows = cursor.fetchall()
     conn.close()
