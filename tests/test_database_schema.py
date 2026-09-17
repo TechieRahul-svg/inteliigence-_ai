@@ -9,14 +9,11 @@ def test_tables_created():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT table_name 
+        SELECT table_name
         FROM information_schema.tables
         WHERE table_schema='public'
     """)
-
-    tables = [
-        row[0] for row in cursor.fetchall()
-    ]
+    tables = [row[0] for row in cursor.fetchall()]
 
     assert "teachers" in tables
     assert "students" in tables

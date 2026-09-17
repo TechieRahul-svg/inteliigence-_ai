@@ -2,9 +2,6 @@ import streamlit as st
 
 
 def subject_card(name, code, section, stats=None, footer_callback=None):
-    # Build gradient header strip
-    header_gradient = "linear-gradient(135deg, rgba(124,58,237,0.15) 0%, rgba(99,102,241,0.1) 100%)"
-
     html = f"""
     <div style="
         background: rgba(17,24,39,0.5);
@@ -80,9 +77,9 @@ def subject_card(name, code, section, stats=None, footer_callback=None):
                 <span style="color: #F9FAFB; font-weight: 700;">{value}</span>
             </div>
             """
-        html += '</div>'
+        html += "</div>"
 
-    html += '</div></div>'
+    html += "</div></div>"
 
     st.html(html)
 

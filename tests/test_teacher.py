@@ -1,7 +1,27 @@
-from src.database.db import create_teacher, teacher_login
+from src.database.db import (
+    create_teacher,
+    teacher_login,
+    get_connection
+)
+
+
+def cleanup_teacher():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM teachers WHERE username = %s",
+        ("test_teacher",)
+    )
+
+    conn.commit()
+    conn.close()
 
 
 def test_teacher_creation():
+
+    cleanup_teacher()
 
     result = create_teacher(
         "test_teacher",
@@ -9,7 +29,7 @@ def test_teacher_creation():
         "Test Teacher"
     )
 
-    assert result == True
+    assert result
 
 
 def test_teacher_login():
