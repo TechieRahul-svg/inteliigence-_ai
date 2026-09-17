@@ -83,3 +83,12 @@ jobs:
       - name: Run Flake8
         run: |
           flake8 src tests
+
+      - name: Install security tools
+        run: |
+          pip install pip-audit
+
+
+      - name: Run security audit
+        run: |
+          pip-audit
