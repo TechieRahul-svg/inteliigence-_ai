@@ -29,7 +29,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: "3.11"
+        python-version: "3.13"
 
 
     # Install dependencies
@@ -43,3 +43,12 @@ jobs:
     - name: Check Python files
       run: |
         python -m compileall .
+
+    - name: Install testing tools
+  run: |
+    pip install pytest
+
+
+    - name: Run Tests
+      run: |
+        pytest
