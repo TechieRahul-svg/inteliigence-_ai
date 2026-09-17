@@ -3,12 +3,15 @@ import bcrypt
 import json
 import os
 
+import os
+
+
 DB_CONFIG = {
-    "host": "localhost",
-    "database": "attendance_system",
-    "user": "postgres",
-    "password": "12345",
-    "port": "5432"
+    "host": os.getenv("DB_HOST", "localhost"),
+    "database": os.getenv("DB_NAME", "attendance_system"),
+    "user": os.getenv("DB_USER", "postgres"),
+    "password": os.getenv("DB_PASSWORD", "12345"),
+    "port": os.getenv("DB_PORT", "5432")
 }
 
 
