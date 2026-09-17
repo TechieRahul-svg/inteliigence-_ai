@@ -74,3 +74,12 @@ jobs:
 
         run: |
           pytest
+        
+      - name: Install code quality tools
+        run: |
+          pip install flake8
+
+
+      - name: Run Flake8
+        run: |
+          flake8 src tests
